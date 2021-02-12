@@ -13,4 +13,8 @@ router.post("/register", async (req,res) => {
 	}
 });
 
+router.post("/autheticate", async (req,res) => {
+	
+});
+
 module.exports = app => app.use("/auth", router);

@@ -8,8 +8,7 @@ const CurrencySchema = new mongoose.Schema ({
 		uppercase: true,
 	},
 	rateToEur: {
-		type: Schema.Types.Decimal128,
-		default: 1,
+		type: mongoose.Schema.Types.Decimal128
 	}
 });
 

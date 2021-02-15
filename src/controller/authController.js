@@ -4,17 +4,13 @@ const User = require("../model/User");
 
 const router = express.Router();
 
-router.post("/register", async (req,res) => {
+router.post('/register', async (req, res) => {
 	try {
 		const user = await User.create(req.body);
 		return res.send({user});
 	} catch (err) {
-		return res.status(400).send({error: "erro na criação do usuário"});
+		return res.status(400).send({error: 'erro na criação do usuário'});
 	}
 });
 
-router.post("/autheticate", async (req,res) => {
-	
-});
-
-module.exports = app => app.use("/auth", router);
+module.exports = app => app.use('/auth', router);

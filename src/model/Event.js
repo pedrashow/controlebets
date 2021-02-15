@@ -2,15 +2,16 @@ const mongoose = require("../../env/database");
 
 const EventSchema = new mongoose.Schema({
 	market: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Market',
-		require: true
+		type: String,
+		required: true,
+		index: true
 	},
 	competition: {
 		type: String,
 	},
 	date: {
-		type : Date,
+		type: Date,
+		required: true,
 	},
 	homeTeam: {
 		type: String,

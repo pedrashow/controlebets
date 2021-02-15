@@ -29,7 +29,7 @@ const BetSchema = new mongoose.Schema({
 		enum: ['home','away','draw','asianHome', 'asianAway','under', 'over', 'homeUnder', 'homeOver', 'awayUnder', 'awayOver','btts'],
 		required: true,
 	},
-	value:{
+	selectionHandicap:{
 		type: mongoose.Types.Decimal128,
 	},
 	odds:{
@@ -52,7 +52,7 @@ const BetSchema = new mongoose.Schema({
 	isWinner: {
 		type: Boolean,
 	},
-	return: {
+	returnValue: {
 		type: mongoose.Types.Decimal128,
 	}
 });

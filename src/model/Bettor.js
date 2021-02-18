@@ -4,16 +4,19 @@ const BettorSchema = new mongoose.Schema({
 	nickname: {
 		type: String,
 		required: true,
+		index: true
+	},
+	email: {
+		type: String,
+		required: true,
+		unique: true
 	},
 	firstName: String,
 	lastName: String,
-	isCustomer: {
-		type: Boolean,
-		default: true,
-	},
 	isBookie: {
 		type: Boolean,
 		default: false,
+		index: true
 	},
 	favCurrency: {
 		type: mongoose.Schema.Types.ObjectId,

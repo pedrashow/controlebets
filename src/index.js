@@ -11,6 +11,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 require('./controller/authController')(app);
 require('./controller/eventController')(app);
 require('./controller/currencyController')(app);
+require('./controller/bettorController')(app);
+require('./controller/betController')(app);
 
 app.listen(port);
 

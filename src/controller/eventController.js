@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
 	try {
-		const events = await Event.find();
+		const events = await Event.find().populate('bets');
 		return res.send({events});
 	} catch (err) {
 		return res.status(400).send({error: 'erro abrindo eventos'});
@@ -36,7 +36,7 @@ router.get('/date/:initialDate/:endDate', async (req, res) => {
 
 router.get('/:eventId', async (req, res) => {
 	try {
-		const event = await Event.findById(req.params.eventId);
+		const event = await Event.findById(req.params.eventId).populate('bets');
 		return res.send({event});
 	} catch (err) {
 		return res.status(400).send({error: 'erro abrindo evento'});
@@ -55,11 +55,32 @@ router.post('/', async (req, res) => {
 router.put('/:eventId', async (req, res) => {
 	try {
 		const eventUpdate = req.body;
-		const event = await Event.findByIdAndUpdate(req.params.eventId, eventUpdate, {new: true});
+		const event = await Event.findByIdAndUpdate(req.params.eventId, eventUpdate, {new: true}).populate('bets');
 		return res.send({event});
 	} catch (err) {
 		return res.status(400).send({error: 'erro atualizando evento'});
 	}	
+});
+
+router.put('/score/:eventId', async (req, res) => {
+	try {
+		const event = await Event.findById(req.params.eventId).populate('bets');
+		event.scoreHomeTeam = req.body.scoreHomeTeam;
+		event.scoreAwayTeam = req.body.scoreAwayTeam;
+		
+		await Promise.all (
+			event.bets.map(async bet => {
+				await bet.calcResult(event.scoreHomeTeam, event.scoreAwayTeam);
+				await bet.save({new: true});
+			})
+		);
+
+		await event.update({new : true});
+		return res.send({event});
+	} catch (err) {
+		console.log(err);
+		return res.status(400).send();
+	}
 });
 
 router.delete('/:eventId', async (req, res) => {

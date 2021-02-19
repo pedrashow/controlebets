@@ -56,48 +56,41 @@ const BetSchema = new mongoose.Schema({
 
 BetSchema.methods.calcResult = function (homeScore,awayScore) {
 	const scoreDiff = parseInt(homeScore) - parseInt(awayScore);
-	const awayDiff = -1 * scoreDiff;
-	const winValue = parseFloat(this.stake) * parseFloat(this.odds);
+	const winValue = parseFloat(this.stake,2) * parseFloat(this.odds,2);
 	const totalScore = parseInt(homeScore) + parseInt (awayScore);
 	switch (this.selection) {
 		case 'home':
 			this.bettorResult = this.winner(scoreDiff, winValue);
 			break;
 		case 'away':
-			this.bettorResult = this.winner(awayDiff, winValue);
+			this.bettorResult = this.winner(-1 * scoreDiff, winValue);
 			break;
 		case 'draw':
 			this.bettorResult = this.draw(scoreDiff, winValue);
 			break;
 		case 'asianHome':
-			this.bettorResult = this.asianCalc(scoreDiff, this.handicap, winValue);
+			this.bettorResult = this.asianCalc(scoreDiff, this.selectionHandicap, winValue);
 			break;
 		case 'asianAway':
-			this.bettorResult = this.asianCalc(awayDiff, this.handicap, winValue);
+			this.bettorResult = this.asianCalc(-1 * scoreDiff, this.selectionHandicap, winValue);
 			break;
 		case 'under':
-			let score = -1 * totalScore;
-			this.bettorResult = this.asianCalc(score, this.handicap, winValue)
+			this.bettorResult = this.asianCalc( -1 * totalScore, this.selectionHandicap, winValue)
 			break;
 		case 'over':
-			let handicap = -1 * this.handicap;
-			this.bettorResult = this.asianCalc(totalScore, handicap, winValue);
+			this.bettorResult = this.asianCalc(totalScore, -1* this.selectionHandicap, winValue);
 			break;
 		case 'homeOver':
-			handicap = -1 * this.handicap;
-			this.bettorResult = this.asianCalc(homeScore, handicap, winValue);
+			this.bettorResult = this.asianCalc(homeScore, -1 * this.selectionHandicap, winValue);
 			break;
 		case 'homeUnder':
-			score = -1 * homeScore;
-			this.bettorResult = this.asianCalc(score, this.handicap, winValue);
+			this.bettorResult = this.asianCalc(-1 * homeScore, this.selectionHandicap, winValue);
 			break;
 		case 'awayOver':
-			handicap = -1 * this.handicap;
-			this.bettorResult = this.asianCalc(awayScore, handicap, winValue);
+			this.bettorResult = this.asianCalc(awayScore, -1 * this.selectionHandicap, winValue);
 			break;
 		case 'awayUnder':
-			score = -1 * awayScore;
-			this.bettorResult = this.asianCalc(score, this.handicap, winValue);
+			this.bettorResult = this.asianCalc(-1 * awayScore, this.selectionHandicap, winValue);
 			break;
 		case 'btts':
 			this.bettorResult = this.btts(homeScore, awayScore, winValue);
@@ -118,7 +111,7 @@ BetSchema.methods.draw = function (scoreDiff, winValue) {
 }
 
 BetSchema.methods.asianCalc = function (score, handicap, winValue) {
-	const netScore = score + handicap;
+	const netScore = parseFloat(score,2) + parseFloat(handicap,2);
 	if (netScore > 0.25)
 		return winValue;
 	if (netScore > 0)

@@ -75,7 +75,7 @@ router.put('/score/:eventId', async (req, res) => {
 			})
 		);
 
-		await event.update({new : true});
+		await event.save({new : true});
 		return res.send({event});
 	} catch (err) {
 		console.log(err);

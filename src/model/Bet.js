@@ -62,7 +62,7 @@ const BetSchema = new mongoose.Schema({
 
 BetSchema.methods.calcResult = function (homeScore, awayScore) {
 	const scoreDiff = parseInt(homeScore) - parseInt(awayScore);
-	const winValue = parseFloat(this.stake, 2) * parseFloat(this.odds, 2);
+	const winValue = parseFloat(this.stakeInEur, 2) * parseFloat(this.odds, 2);
 	const totalScore = parseInt(homeScore) + parseInt(awayScore);
 	switch (this.selection) {
 		case 'home':
@@ -107,13 +107,13 @@ BetSchema.methods.calcResult = function (homeScore, awayScore) {
 BetSchema.methods.winner = function (scoreDiff, winValue) {
 	if (scoreDiff > 0)
 		return winValue;
-	return (-1 * this.stake);
+	return (-1 * this.stakeInEur);
 }
 
 BetSchema.methods.draw = function (scoreDiff, winValue) {
 	if (scoreDiff === 0)
 		return winValue;
-	return (-1 * this.stake);
+	return (-1 * this.stakeInEur);
 }
 
 BetSchema.methods.asianCalc = function (score, handicap, winValue) {
@@ -123,17 +123,17 @@ BetSchema.methods.asianCalc = function (score, handicap, winValue) {
 	if (netScore > 0)
 		return (winValue / 2);
 	if (netScore === 0)
-		return this.stake;
+		return this.stakeInEur;
 	if (netScore === -0.25)
-		return (-1 * (this.stake / 2));
-	return (-1 * this.stake)
+		return (-1 * (this.stakeInEur / 2));
+	return (-1 * this.stakeInEur)
 }
 
 BetSchema.methods.btts = function (home, away, winValue) {
 	if (home > 0)
 		if (away > 0)
 			return winValue;
-	return (-1 * this.stake);
+	return (-1 * this.stakeInEur);
 }
 
 BetSchema.methods.convertToEur = async function(value, currencyId) {
@@ -142,12 +142,16 @@ BetSchema.methods.convertToEur = async function(value, currencyId) {
 }
 
 BetSchema.pre('validate', async function(next) {
-	if (this.bettorResult)
-		this.bettorResult = parseFloat(this.bettorResult, 2);
 	if (!this.stakeInEur)
 		await this.convertToEur(this.stake, this.stakeCurrency);
 	next();
 });
+
+BetSchema.pre('save', async function(next) {
+	if (this.bettorResult)
+		this.bettorResult = parseFloat(this.bettorResult, 2);	
+})
+
 
 const Bet = mongoose.model('Bet', BetSchema);
 

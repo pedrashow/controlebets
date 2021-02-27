@@ -1,4 +1,6 @@
 const mongoose = require("../../env/database");
+const User = require("./User");
+const Currency = require("./Currency");
 
 
 const BetSchema = new mongoose.Schema({
@@ -15,6 +17,10 @@ const BetSchema = new mongoose.Schema({
 	placedWhere: {
 		type: String,
 	},
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: User,
+	},
 	bookie: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Bettor',
@@ -24,19 +30,19 @@ const BetSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 	},
-	selection:{
+	selection: {
 		type: String,
-		enum: ['home','away','draw','asianHome', 'asianAway','under', 'over', 'homeUnder', 'homeOver', 'awayUnder', 'awayOver','btts'],
+		enum: ['home', 'away', 'draw', 'asianHome', 'asianAway', 'under', 'over', 'homeUnder', 'homeOver', 'awayUnder', 'awayOver', 'btts'],
 		required: true,
 	},
-	selectionHandicap:{
+	selectionHandicap: {
 		type: mongoose.Types.Decimal128,
 	},
-	odds:{
+	odds: {
 		type: mongoose.Types.Decimal128,
 		required: true,
 	},
-	stake:{
+	stake: {
 		type: mongoose.Types.Decimal128,
 		required: true,
 	},
@@ -54,10 +60,10 @@ const BetSchema = new mongoose.Schema({
 	}
 });
 
-BetSchema.methods.calcResult = function (homeScore,awayScore) {
+BetSchema.methods.calcResult = function (homeScore, awayScore) {
 	const scoreDiff = parseInt(homeScore) - parseInt(awayScore);
-	const winValue = parseFloat(this.stake,2) * parseFloat(this.odds,2);
-	const totalScore = parseInt(homeScore) + parseInt (awayScore);
+	const winValue = parseFloat(this.stake, 2) * parseFloat(this.odds, 2);
+	const totalScore = parseInt(homeScore) + parseInt(awayScore);
 	switch (this.selection) {
 		case 'home':
 			this.bettorResult = this.winner(scoreDiff, winValue);
@@ -75,10 +81,10 @@ BetSchema.methods.calcResult = function (homeScore,awayScore) {
 			this.bettorResult = this.asianCalc(-1 * scoreDiff, this.selectionHandicap, winValue);
 			break;
 		case 'under':
-			this.bettorResult = this.asianCalc( -1 * totalScore, this.selectionHandicap, winValue)
+			this.bettorResult = this.asianCalc(-1 * totalScore, this.selectionHandicap, winValue)
 			break;
 		case 'over':
-			this.bettorResult = this.asianCalc(totalScore, -1* this.selectionHandicap, winValue);
+			this.bettorResult = this.asianCalc(totalScore, -1 * this.selectionHandicap, winValue);
 			break;
 		case 'homeOver':
 			this.bettorResult = this.asianCalc(homeScore, -1 * this.selectionHandicap, winValue);
@@ -94,7 +100,7 @@ BetSchema.methods.calcResult = function (homeScore,awayScore) {
 			break;
 		case 'btts':
 			this.bettorResult = this.btts(homeScore, awayScore, winValue);
-			break;							
+			break;
 	}
 };
 
@@ -111,7 +117,7 @@ BetSchema.methods.draw = function (scoreDiff, winValue) {
 }
 
 BetSchema.methods.asianCalc = function (score, handicap, winValue) {
-	const netScore = parseFloat(score,2) + parseFloat(handicap,2);
+	const netScore = parseFloat(score, 2) + parseFloat(handicap, 2);
 	if (netScore > 0.25)
 		return winValue;
 	if (netScore > 0)
@@ -120,7 +126,7 @@ BetSchema.methods.asianCalc = function (score, handicap, winValue) {
 		return this.stake;
 	if (netScore === -0.25)
 		return (-1 * (this.stake / 2));
-	return (-1* this.stake)
+	return (-1 * this.stake)
 }
 
 BetSchema.methods.btts = function (home, away, winValue) {
@@ -129,6 +135,19 @@ BetSchema.methods.btts = function (home, away, winValue) {
 			return winValue;
 	return (-1 * this.stake);
 }
+
+BetSchema.methods.convertToEur = async function(value, currencyId) {
+	const currency = await Currency.findById(currencyId);
+	this.stakeInEur = parseFloat(parseFloat(value,2) * parseFloat(currency.rateToEur,2), 2);
+}
+
+BetSchema.pre('validate', async function(next) {
+	if (this.bettorResult)
+		this.bettorResult = parseFloat(this.bettorResult, 2);
+	if (!this.stakeInEur)
+		await this.convertToEur(this.stake, this.stakeCurrency);
+	next();
+});
 
 const Bet = mongoose.model('Bet', BetSchema);
 

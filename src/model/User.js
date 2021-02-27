@@ -18,6 +18,9 @@ const UserSchema = new mongoose.Schema ({
 		required: true,
 		select: false,
 	},
+	picture : {
+		type: String
+	}
 });
 
 UserSchema.pre('save', async function(next) {

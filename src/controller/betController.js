@@ -18,22 +18,32 @@ router.post('/', async (req, res) => {
 		bettor = await Bettor.findById(bet.bookie);
 		bettor.bets.push(bet);
 		await bettor.save();
-		res.send({bet});
+		res.send({
+			bet
+		});
 	} catch (err) {
 		console.log(err);
-		res.status(400).send({ error : 'não foi possível criar a aposta'});
+		res.status(400).send({
+			error: 'não foi possível criar a aposta'
+		});
 	}
 });
 
 router.put('/:betId', async (req, res) => {
 	try {
 		const betFields = req.body;
-		const bet = await Bet.findByIdAndUpdate(req.params.betId, betFields, { new: true});
-		return res.send({bet});
+		const bet = await Bet.findByIdAndUpdate(req.params.betId, betFields, {
+			new: true
+		});
+		return res.send({
+			bet
+		});
 	} catch (err) {
-		return res.status(400).send({ error : 'não foi possível atualizar a aposta'});
+		return res.status(400).send({
+			error: 'não foi possível atualizar a aposta'
+		});
 	}
-	
+
 });
 
 router.delete('/:betId', async (req, res) => {
@@ -51,7 +61,9 @@ router.delete('/:betId', async (req, res) => {
 		await bet.remove();
 		res.send();
 	} catch (err) {
-		res.status(400).send({ error : 'não foi possível apagar a aposta'});
+		res.status(400).send({
+			error: 'não foi possível apagar a aposta'
+		});
 	}
 });
 

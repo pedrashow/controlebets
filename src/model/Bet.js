@@ -65,7 +65,7 @@ const BetSchema = new mongoose.Schema({
 
 BetSchema.methods.calcResult = function (homeScore, awayScore) {
 	const scoreDiff = parseInt(homeScore) - parseInt(awayScore);
-	const winValue = parseFloat(this.stakeInEur, 2) * parseFloat((this.odds - 1), 2);
+	const winValue = parseFloat(this.stake, 2) * parseFloat((this.odds - 1), 2);
 	const totalScore = parseInt(homeScore) + parseInt(awayScore);
 	switch (this.selection) {
 		case 'home':

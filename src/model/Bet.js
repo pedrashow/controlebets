@@ -110,13 +110,13 @@ BetSchema.methods.calcResult = function (homeScore, awayScore) {
 BetSchema.methods.winner = function (scoreDiff, winValue) {
 	if (scoreDiff > 0)
 		return winValue;
-	return (-1 * this.stakeInEur);
+	return (-1 * this.stake);
 }
 
 BetSchema.methods.draw = function (scoreDiff, winValue) {
 	if (scoreDiff === 0)
 		return winValue;
-	return (-1 * this.stakeInEur);
+	return (-1 * this.stake);
 }
 
 BetSchema.methods.asianCalc = function (score, handicap, winValue) {
@@ -126,17 +126,17 @@ BetSchema.methods.asianCalc = function (score, handicap, winValue) {
 	if (netScore > 0)
 		return (winValue / 2);
 	if (netScore === 0)
-		return this.stakeInEur;
+		return this.stake;
 	if (netScore === -0.25)
-		return (-1 * (this.stakeInEur / 2));
-	return (-1 * this.stakeInEur)
+		return (-1 * (this.stake / 2));
+	return (-1 * this.stake)
 }
 
 BetSchema.methods.btts = function (home, away, winValue) {
 	if (home > 0)
 		if (away > 0)
 			return winValue;
-	return (-1 * this.stakeInEur);
+	return (-1 * this.stake);
 }
 
 BetSchema.methods.convertToEur = async function(value, currencyId) {

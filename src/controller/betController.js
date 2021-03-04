@@ -1,6 +1,6 @@
 const express = require('express');
 
-const Bet = require('../model/bet');
+const Bet = require('../model/Bet');
 const Event = require('../model/Event');
 const Bettor = require('../model/Bettor');
 

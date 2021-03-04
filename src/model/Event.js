@@ -3,8 +3,6 @@ const mongoose = require("../../env/database");
 const EventSchema = new mongoose.Schema({
 	market: {
 		type: String,
-		required: true,
-		index: true
 	},
 	competition: {
 		type: String,

@@ -49,6 +49,7 @@ router.post('/', async (req, res) => {
 		res.send({event});
 	} catch (err) {
 		res.status(400).send({ error : 'não foi possível criar o evento'});
+		console.log(err);
 	}
 });
 

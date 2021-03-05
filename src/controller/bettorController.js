@@ -6,7 +6,9 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
 	try {
-		const bettors = await Bettor.find().populate('bets');
+		const bettors = await Bettor.find()
+								.populate({path: 'bets', populate:{ path: 'event bookie stakeCurrency'}})
+								.populate('favCurrency');
 		return res.send( {bettors});
 	} catch (err) {
 		return res.status(400).send({error: 'erro abrindo apostadores'});

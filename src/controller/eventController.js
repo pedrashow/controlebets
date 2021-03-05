@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
 	try {
-		const events = await Event.find().populate('bets');
+		const events = await Event.find().populate({path: 'bets', populate:{ path: 'bettor bookie stakeCurrency'}});
 		return res.send({events});
 	} catch (err) {
 		return res.status(400).send({error: 'erro abrindo eventos'});

@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const port = 3001;
+const PORT = 3001;
 
 const app = express();
 
@@ -18,4 +18,4 @@ require('./controller/currencyController')(app);
 require('./controller/bettorController')(app);
 require('./controller/betController')(app);
 
-app.listen(port);
+app.listen(PORT);

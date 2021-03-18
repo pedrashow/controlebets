@@ -15,20 +15,25 @@ router.get('/', async (req, res) => {
 	}	
 });
 
-router.get('/:bettorId', async (req, res) => {
+router.get('/bookies', async(req, res) => {
 	try {
-		const bettor = await Bettor.findById(req.params.bettorId).populate('bets');
-		return res.send({bettor});
+
+		const bookies = await Bettor.find({ isBookie : true});
+
+		return res.send({ bookies });
+
 	} catch (err) {
-		return res.status(400).send({error: 'erro abrindo apostador'});
-	}		
+		return res.status(400);
+	}
 });
+
 
 router.post('/', async (req, res) => {
 	try {
 		const bettor = await Bettor.create(req.body);
 		res.send({bettor});
 	} catch (err) {
+		console.log(err);
 		res.status(400).send({ error : 'não foi possível criar o apostador'});
 	}
 });
